@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>climb.lol — Track NA leaderboards with clarity</title>
+  <link rel="stylesheet" href="/assets/styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <header class="navbar">
+    <div class="container navbar-inner">
+      <a class="brand" href="/">climb.lol</a>
+      <nav class="nav-links">
+        <a href="/">Home</a>
+        <a href="/leaderboards/">Leaderboards</a>
+        <a href="/auth/">Sign in</a>
+      </nav>
+      <a class="nav-cta" href="/leaderboards/">Browse</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="container hero">
+      <div>
+        <h1>Keep NA ranked squads visible, focused, and always up to date.</h1>
+        <p>
+          climb.lol is a modern leaderboard hub for League of Legends. Build a single, curated leaderboard of up to 15 players, track ranked stats, and share publicly or privately.
+        </p>
+        <div class="hero-actions">
+          <a class="button primary" href="/leaderboards/">View Leaderboards</a>
+          <a class="button secondary" href="/auth/">Sign In</a>
+        </div>
+      </div>
+      <div class="banner">
+        <h3>Made for clean collaboration</h3>
+        <p>Dark-mode first UI, fast load times, and a stable PUUID-first data model make this leaderboard future-proof for serious teams.</p>
+        <div class="card-grid" style="margin-top:1.5rem;">
+          <div class="card">
+            <strong>PUUID-first</strong>
+            <span>Stable identity even if players rename.</span>
+          </div>
+          <div class="card">
+            <strong>Scheduled refresh</strong>
+            <span>Data stays fresh with real 30-min cron jobs.</span>
+          </div>
+          <div class="card">
+            <strong>Latest games feed</strong>
+            <span>Snapshot of the 10 most recent matches.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div class="section-header">
+          <h2>What you can do</h2>
+          <span class="badge">NA only</span>
+        </div>
+        <div class="card-grid">
+          <div class="card">
+            <strong>Browse public leaderboards</strong>
+            <span>Search by name and explore the public directory with no login.</span>
+          </div>
+          <div class="card">
+            <strong>Own one leaderboard</strong>
+            <span>Create exactly one leaderboard per account, keeping the focus on your squad.</span>
+          </div>
+          <div class="card">
+            <strong>Control visibility</strong>
+            <span>Switch between public, unlisted, or private with a clean shareable link.</span>
+          </div>
+          <div class="card">
+            <strong>Track ranked stats</strong>
+            <span>See current rank, LP, winrate, top champions, and recent games.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <p>climb.lol &copy; <span data-year></span> • Built for clarity and competitive focus.</p>
+    </div>
+  </footer>
+
+  <script src="/assets/app.js"></script>
+</body>
+</html>
