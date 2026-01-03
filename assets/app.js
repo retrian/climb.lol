@@ -2,10 +2,11 @@ const formatMinutes = (minutes) => `${minutes} min ago`;
 
 const getClientConfig = () => {
   const dataset = document.body?.dataset ?? {};
+  const origin = window.location?.origin ?? "";
   return {
-    appBaseUrl: dataset.appBaseUrl || "http://localhost:3000",
+    appBaseUrl: dataset.appBaseUrl || origin,
     apiBaseUrl: dataset.apiBaseUrl || dataset.apiBase || "",
-    cdnBaseUrl: dataset.cdnBaseUrl || "http://localhost:3000",
+    cdnBaseUrl: dataset.cdnBaseUrl || origin,
     opggBaseUrl: dataset.opggBaseUrl || "https://www.op.gg",
     riotDdragonBase: dataset.riotDdragonBase || "https://ddragon.leagueoflegends.com"
   };
