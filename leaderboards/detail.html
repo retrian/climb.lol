@@ -10,7 +10,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
 </head>
 <body>
-  <header class="navbar">
+  <header class="navbar" data-app-data>
     <div class="container navbar-inner">
       <a class="brand" href="/">climb.lol</a>
       <nav class="nav-links">
@@ -25,9 +25,13 @@
   <main class="section">
     <div class="container">
       <div class="banner" style="margin-bottom:2rem;">
-        <span class="badge">Public</span>
-        <h2 style="margin-top:0.8rem;">Challenger Crew</h2>
-        <p style="color:var(--muted);max-width:65ch;">A focused NA-only leaderboard tracking the most active ranked grinders. Last refreshed 12 minutes ago.</p>
+        <span class="badge" data-leaderboard-visibility-badge></span>
+        <h2 style="margin-top:0.8rem;" data-leaderboard-title></h2>
+        <p class="muted" style="max-width:65ch;"><span data-leaderboard-description></span> <span data-leaderboard-refreshed></span></p>
+        <div class="stack" style="margin-top:0.6rem;">
+          <span class="muted">Shareable link: <span data-leaderboard-share></span></span>
+          <span class="muted" data-leaderboard-visibility></span>
+        </div>
         <div class="hero-actions" style="margin-top:1.5rem;">
           <a class="button primary" href="#latest">View latest games</a>
           <a class="button secondary" href="/auth/">Claim & manage</a>
@@ -50,79 +54,7 @@
             <th>Socials</th>
           </tr>
         </thead>
-        <tbody>
-          <tr>
-            <td data-label="Player">
-              <div class="player">
-                <div class="avatar"><img src="https://ddragon.leagueoflegends.com/cdn/14.2.1/img/profileicon/503.png" alt="Profile icon" /></div>
-                <div>
-                  <strong>SkyHook#NA1</strong>
-                  <div style="color:var(--muted);font-size:0.85rem;">OP.GG auto-linked</div>
-                </div>
-              </div>
-            </td>
-            <td data-label="Role">Mid</td>
-            <td data-label="Rank">
-              <span class="rank-pill">Challenger • 890 LP</span>
-            </td>
-            <td data-label="Winrate">
-              <div class="winrate">
-                <span>128W - 64L</span>
-                <div class="winrate-bar"><span style="width:67%;"></span></div>
-              </div>
-            </td>
-            <td data-label="Top Champs">
-              <div class="champs">
-                <div class="champ-icon"><img src="https://ddragon.leagueoflegends.com/cdn/14.2.1/img/champion/Ahri.png" alt="Ahri" /></div>
-                <div class="champ-icon"><img src="https://ddragon.leagueoflegends.com/cdn/14.2.1/img/champion/Sylas.png" alt="Sylas" /></div>
-                <div class="champ-icon"><img src="https://ddragon.leagueoflegends.com/cdn/14.2.1/img/champion/Orianna.png" alt="Orianna" /></div>
-                <div class="champ-icon"><img src="https://ddragon.leagueoflegends.com/cdn/14.2.1/img/champion/Azir.png" alt="Azir" /></div>
-                <div class="champ-icon"><img src="https://ddragon.leagueoflegends.com/cdn/14.2.1/img/champion/Leblanc.png" alt="LeBlanc" /></div>
-              </div>
-            </td>
-            <td data-label="Socials">
-              <div style="display:grid;gap:0.2rem;">
-                <a href="#">twitch.tv/skyhook</a>
-                <a href="#">x.com/skyhook</a>
-              </div>
-            </td>
-          </tr>
-          <tr>
-            <td data-label="Player">
-              <div class="player">
-                <div class="avatar"><img src="https://ddragon.leagueoflegends.com/cdn/14.2.1/img/profileicon/508.png" alt="Profile icon" /></div>
-                <div>
-                  <strong>Nova#NA1</strong>
-                  <div style="color:var(--muted);font-size:0.85rem;">OP.GG auto-linked</div>
-                </div>
-              </div>
-            </td>
-            <td data-label="Role">Jungle</td>
-            <td data-label="Rank">
-              <span class="rank-pill">Grandmaster • 702 LP</span>
-            </td>
-            <td data-label="Winrate">
-              <div class="winrate">
-                <span>96W - 58L</span>
-                <div class="winrate-bar"><span style="width:62%;"></span></div>
-              </div>
-            </td>
-            <td data-label="Top Champs">
-              <div class="champs">
-                <div class="champ-icon"><img src="https://ddragon.leagueoflegends.com/cdn/14.2.1/img/champion/LeeSin.png" alt="Lee Sin" /></div>
-                <div class="champ-icon"><img src="https://ddragon.leagueoflegends.com/cdn/14.2.1/img/champion/Graves.png" alt="Graves" /></div>
-                <div class="champ-icon"><img src="https://ddragon.leagueoflegends.com/cdn/14.2.1/img/champion/Viego.png" alt="Viego" /></div>
-                <div class="champ-icon"><img src="https://ddragon.leagueoflegends.com/cdn/14.2.1/img/champion/Nocturne.png" alt="Nocturne" /></div>
-                <div class="champ-icon"><img src="https://ddragon.leagueoflegends.com/cdn/14.2.1/img/champion/Nidalee.png" alt="Nidalee" /></div>
-              </div>
-            </td>
-            <td data-label="Socials">
-              <div style="display:grid;gap:0.2rem;">
-                <a href="#">twitch.tv/nova</a>
-              </div>
-            </td>
-          </tr>
-        </tbody>
+        <tbody data-leaderboard-players></tbody>
       </table>
 
       <section id="latest" class="section" style="padding-top:2.5rem;">
@@ -130,35 +62,7 @@
           <h2>Latest games</h2>
           <span class="badge">Last 10 across the leaderboard</span>
         </div>
-        <div class="feed">
-          <div class="feed-item">
-            <div>
-              <strong>SkyHook#NA1</strong>
-              <span style="color:var(--muted)">Ahri • 2 hours ago</span>
-            </div>
-            <div>11 / 3 / 9</div>
-            <div>CS 214 • W</div>
-            <div>Ranked Solo • 32m</div>
-          </div>
-          <div class="feed-item">
-            <div>
-              <strong>Nova#NA1</strong>
-              <span style="color:var(--muted)">Lee Sin • 3 hours ago</span>
-            </div>
-            <div>6 / 2 / 12</div>
-            <div>CS 188 • W</div>
-            <div>Ranked Solo • 29m</div>
-          </div>
-          <div class="feed-item">
-            <div>
-              <strong>Nova#NA1</strong>
-              <span style="color:var(--muted)">Viego • 5 hours ago</span>
-            </div>
-            <div>3 / 6 / 7</div>
-            <div>CS 172 • L</div>
-            <div>Ranked Solo • 34m</div>
-          </div>
-        </div>
+        <div class="feed" data-latest-feed></div>
       </section>
     </div>
   </main>

@@ -10,7 +10,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
 </head>
 <body>
-  <header class="navbar">
+  <header class="navbar" data-app-data>
     <div class="container navbar-inner">
       <a class="brand" href="/">climb.lol</a>
       <nav class="nav-links">
@@ -27,9 +27,12 @@
       <div class="section-header">
         <div>
           <h2>Manage leaderboard</h2>
-          <p style="color:var(--muted)">Create or update your single leaderboard. Visibility controls who can see it.</p>
+          <p class="muted">Create or update your single leaderboard. Visibility controls who can see it.</p>
         </div>
-        <span class="badge">Last refresh: 8 min ago</span>
+        <div class="stack">
+          <span class="badge" data-dashboard-refreshed></span>
+          <span class="muted" data-dashboard-status></span>
+        </div>
       </div>
 
       <div class="card">
@@ -37,38 +40,43 @@
         <div style="display:grid;gap:1rem;margin-top:1rem;">
           <label>
             <span>Name</span>
-            <input class="input" type="text" value="Challenger Crew" />
+            <input class="input" type="text" data-dashboard-name />
           </label>
           <label>
             <span>Description</span>
-            <textarea class="input" rows="3">High-elo NA squad with a focus on daily ranked grind.</textarea>
+            <textarea class="input" rows="3" data-dashboard-description></textarea>
           </label>
           <label>
             <span>Banner URL</span>
             <input class="input" type="url" placeholder="https://" />
           </label>
           <label>
+            <span>Slug (shareable URL)</span>
+            <input class="input" type="text" data-dashboard-slug readonly />
+          </label>
+          <label>
             <span>Visibility</span>
-            <select class="input">
+            <select class="input" data-dashboard-visibility>
               <option>Public</option>
               <option>Unlisted</option>
               <option>Private</option>
             </select>
           </label>
+          <span class="muted">Public appears in the directory, Unlisted is link-only, Private is owner-only.</span>
         </div>
         <div class="hero-actions" style="margin-top:1.5rem;">
           <button class="button primary" type="button">Save changes</button>
-          <button class="button secondary" type="button">Copy shareable link</button>
+          <button class="button secondary" type="button" data-copy>Copy shareable link</button>
         </div>
       </div>
 
       <div class="card">
-        <h3>Players (2 / 15)</h3>
-        <p style="color:var(--muted)">Add by Riot ID, assign a role, and optional socials. PUUID uniqueness enforced.</p>
+        <h3 data-dashboard-player-count></h3>
+        <p class="muted">Add by Riot ID, assign a role (standard or custom), and optional socials. PUUID uniqueness enforced.</p>
         <div style="display:grid;gap:0.75rem;margin-top:1rem;">
           <div style="display:grid;grid-template-columns:2fr 1fr;gap:0.75rem;">
             <input class="input" type="text" placeholder="Riot ID e.g. SkyHook#NA1" />
-            <input class="input" type="text" placeholder="Role" />
+            <input class="input" type="text" placeholder="Role (Top, Jungle, etc.)" />
           </div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;">
             <input class="input" type="url" placeholder="Twitch URL (optional)" />
@@ -78,21 +86,7 @@
         </div>
 
         <div style="margin-top:1.5rem;display:grid;gap:0.75rem;">
-          <div class="card" style="padding:1rem;display:flex;justify-content:space-between;align-items:center;">
-            <div>
-              <strong>SkyHook#NA1</strong>
-              <span style="color:var(--muted)">Mid • Twitch linked</span>
-            </div>
-            <button class="button secondary" type="button">Remove</button>
-          </div>
-          <div class="card" style="padding:1rem;display:flex;justify-content:space-between;align-items:center;">
-            <div>
-              <strong>Nova#NA1</strong>
-              <span style="color:var(--muted)">Jungle • X linked</span>
-            </div>
-            <button class="button secondary" type="button">Remove</button>
-          </div>
-        </div>
+        <div style="margin-top:1.5rem;display:grid;gap:0.75rem;" data-dashboard-players></div>
       </div>
     </div>
   </main>

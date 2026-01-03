@@ -10,7 +10,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
 </head>
 <body>
-  <header class="navbar">
+  <header class="navbar" data-app-data>
     <div class="container navbar-inner">
       <a class="brand" href="/">climb.lol</a>
       <nav class="nav-links">
@@ -27,30 +27,18 @@
       <div class="section-header">
         <div>
           <h2>Public leaderboards</h2>
-          <p style="color:var(--muted)">Browse NA-only leaderboards. Search by name to find your crew.</p>
+          <p class="muted">Browse NA-only leaderboards. Search by name to find your crew.</p>
+          <div class="stack" style="margin-top:0.6rem;">
+            <span class="badge">Public only</span>
+            <span class="muted">Unlisted boards require a direct link. Private boards are owner-only.</span>
+          </div>
         </div>
         <div style="min-width:240px;">
           <input class="input" type="search" placeholder="Search by name" />
         </div>
       </div>
 
-      <div class="card-grid">
-        <a class="card" href="/leaderboards/detail.html">
-          <span class="badge">Public</span>
-          <strong>Challenger Crew</strong>
-          <span>13 players • Updated 12 min ago</span>
-        </a>
-        <a class="card" href="/leaderboards/detail.html">
-          <span class="badge">Public</span>
-          <strong>Cloud9 Academy</strong>
-          <span>10 players • Updated 25 min ago</span>
-        </a>
-        <a class="card" href="/leaderboards/detail.html">
-          <span class="badge">Public</span>
-          <strong>SoloQ Specialists</strong>
-          <span>15 players • Updated 6 min ago</span>
-        </a>
-      </div>
+      <div class="card-grid" data-leaderboard-grid></div>
     </div>
   </main>
 
