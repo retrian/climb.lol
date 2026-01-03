@@ -15,3 +15,16 @@ model Leaderboard {
 
   @@map("leaderboards")
 }
+
+model LeaderboardPlayer {
+  id            String   @id @default(cuid())
+  leaderboardId String   @map("leaderboard_id")
+  puuid         String
+  gameName      String   @map("game_name")
+  tagLine       String   @map("tag_line")
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  @@unique([leaderboardId, puuid])
+  @@index([leaderboardId])
+  @@map("leaderboard_players")
+}
