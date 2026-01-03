@@ -9,7 +9,7 @@ const renderDirectory = (leaderboards) => {
     .forEach((board) => {
       const card = document.createElement("a");
       card.className = "card";
-      card.href = "/leaderboards/detail.html";
+      card.href = `/leaderboards/detail.html?slug=${board.slug}`;
       card.innerHTML = `
         <span class="badge">Public</span>
         <strong>${board.name}</strong>
@@ -147,6 +147,23 @@ const renderDashboard = (leaderboard) => {
   }
 };
 
+const fetchJson = async (url) => {
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error(`Request failed: ${response.status}`);
+  }
+  return response.json();
+};
+
+const getApiBase = () => document.body?.dataset?.apiBase || "";
+
+const resolveSlug = () => {
+  const dataSlug = document.body?.dataset?.leaderboardSlug;
+  if (dataSlug) return dataSlug;
+  const params = new URLSearchParams(window.location.search);
+  return params.get("slug") || "";
+};
+
 document.addEventListener("DOMContentLoaded", async () => {
   const year = document.querySelector("[data-year]");
   if (year) {
@@ -170,10 +187,26 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   const hasData = document.querySelector("[data-app-data]");
-  if (hasData) {
-    const data = await fetch("/assets/data.json").then((response) => response.json());
-    renderDirectory(data.leaderboards);
-    renderLeaderboard(data.leaderboards[0]);
-    renderDashboard(data.leaderboards[0]);
+  if (!hasData) return;
+
+  const apiBase = getApiBase();
+  const slug = resolveSlug();
+
+  try {
+    const leaderboards = await fetchJson(`${apiBase}/leaderboards`);
+    renderDirectory(leaderboards);
+    if (slug) {
+      const leaderboard = await fetchJson(`${apiBase}/leaderboards/${slug}`);
+      renderLeaderboard(leaderboard);
+    } else if (leaderboards[0]) {
+      renderLeaderboard(leaderboards[0]);
+    }
+    const dashboard = await fetchJson(`${apiBase}/leaderboards/me`);
+    renderDashboard(dashboard);
+  } catch (error) {
+    const fallback = await fetchJson("/assets/data.json");
+    renderDirectory(fallback.leaderboards);
+    renderLeaderboard(fallback.leaderboards[0]);
+    renderDashboard(fallback.leaderboards[0]);
   }
 });
