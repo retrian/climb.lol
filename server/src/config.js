@@ -13,6 +13,13 @@ const getRequiredEnv = (key) => {
   return value.trim();
 };
 
+const getNumberEnv = (key, fallback) => {
+  const value = getEnv(key, "");
+  if (!value) return fallback;
+  const parsed = Number.parseInt(value, 10);
+  return Number.isFinite(parsed) ? parsed : fallback;
+};
+
 const parseCsv = (value) =>
   value
     .split(",")
@@ -42,6 +49,7 @@ if (invalidOrigin) {
 }
 
 export const config = {
+  appName: getEnv("APP_NAME", "climb.lol API"),
   appBaseUrl: normalizeBaseUrl(getEnv("APP_BASE_URL", "http://localhost:3000")),
   apiBaseUrl: normalizeBaseUrl(getEnv("API_BASE_URL", "http://localhost:4000")),
   cdnBaseUrl: normalizeBaseUrl(getEnv("CDN_BASE_URL", "http://localhost:3000")),
@@ -49,7 +57,9 @@ export const config = {
   riotDdragonBase: normalizeBaseUrl(getEnv("RIOT_DDRAGON_BASE", "https://ddragon.leagueoflegends.com")),
   corsOrigins,
   isProduction,
-  jwtSecret: getEnv("JWT_SECRET", "")
+  jwtSecret: getEnv("JWT_SECRET", ""),
+  rateLimitWindowMs: getNumberEnv("RATE_LIMIT_WINDOW_MS", 15 * 60 * 1000),
+  rateLimitMax: getNumberEnv("RATE_LIMIT_MAX", 300)
 };
 
 if (config.isProduction && !config.jwtSecret) {

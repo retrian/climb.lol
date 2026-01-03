@@ -35,6 +35,7 @@ function asyncHandler(handler) {
 
 async function resolvePuuid(gameName, tagLine) {
   const apiKey = process.env.RIOT_API_KEY;
+  const riotApiBaseUrl = process.env.RIOT_API_BASE_URL || 'https://americas.api.riotgames.com';
   if (!apiKey) {
     const error = new Error('RIOT_API_KEY is not configured');
     error.status = 500;
@@ -43,7 +44,10 @@ async function resolvePuuid(gameName, tagLine) {
 
   const encodedGameName = encodeURIComponent(gameName);
   const encodedTagLine = encodeURIComponent(tagLine);
-  const url = `https://americas.api.riotgames.com/riot/account/v1/accounts/by-riot-id/${encodedGameName}/${encodedTagLine}`;
+  const url = new URL(
+    `/riot/account/v1/accounts/by-riot-id/${encodedGameName}/${encodedTagLine}`,
+    riotApiBaseUrl
+  ).toString();
 
   const response = await fetch(url, {
     headers: {

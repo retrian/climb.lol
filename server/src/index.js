@@ -27,8 +27,8 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(
   rateLimit({
-    windowMs: 15 * 60 * 1000,
-    limit: 300,
+    windowMs: config.rateLimitWindowMs,
+    limit: config.rateLimitMax,
     standardHeaders: "draft-7",
     legacyHeaders: false
   })
@@ -398,5 +398,5 @@ app.post("/refresh", (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`climb.lol API listening on ${PORT}`);
+  console.log(`${config.appName} listening on ${PORT}`);
 });
