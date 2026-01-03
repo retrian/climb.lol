@@ -4,12 +4,15 @@ const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
 };
 
-export const prisma =
-  globalForPrisma.prisma ??
-  new PrismaClient({
-    log: ["error", "warn"],
-  });
+const databaseUrl = process.env.DATABASE_URL;
 
-if (process.env.NODE_ENV !== "production") {
+export const prisma = databaseUrl
+  ? globalForPrisma.prisma ??
+    new PrismaClient({
+      log: ["error", "warn"],
+    })
+  : null;
+
+if (process.env.NODE_ENV !== "production" && prisma) {
   globalForPrisma.prisma = prisma;
 }

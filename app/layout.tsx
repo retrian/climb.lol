@@ -28,7 +28,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
               <Link href="/">Home</Link>
               <Link href="/leaderboards">Leaderboards</Link>
               {!session ? (
-                <Link href="/api/auth/signin" className="button button--ghost">
+                <Link href="/auth/signin" className="button button--ghost">
                   Sign in
                 </Link>
               ) : (

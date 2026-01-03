@@ -61,7 +61,7 @@ export default async function NewLeaderboardPage() {
                   Back to dashboard
                 </Link>
               ) : (
-                <Link href="/api/auth/signin" className="button button--ghost">
+                <Link href="/auth/signin" className="button button--ghost">
                   Sign in
                 </Link>
               )}
