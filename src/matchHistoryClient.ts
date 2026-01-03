@@ -12,7 +12,7 @@ type MatchHistoryResponse = {
   }>;
 };
 
-const BASE_URL = config.apiBaseUrl;
+const BASE_URL = config.matchHistoryBaseUrl;
 
 export async function fetchMatchHistory(
   leaderboardId: string,
