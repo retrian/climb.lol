@@ -1,21 +1,45 @@
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
+import rateLimit from "express-rate-limit";
 import { z } from "zod";
 import { prisma } from "./db.js";
 import { config } from "./config.js";
+import { optionalAuth, requireAuth } from "./auth.js";
 
 const app = express();
 const PORT = process.env.PORT || 4000;
 
-app.use(cors({ origin: process.env.CORS_ORIGIN || "*" }));
-app.use(express.json());
+const corsOptions = {
+  origin: (origin, callback) => {
+    if (!origin) {
+      return callback(null, true);
+    }
+    if (config.corsOrigins.includes("*") || config.corsOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    const error = new Error("Origin not allowed by CORS");
+    error.status = 403;
+    return callback(error);
+  }
+};
+
+app.use(cors(corsOptions));
+app.use(
+  rateLimit({
+    windowMs: 15 * 60 * 1000,
+    limit: 300,
+    standardHeaders: "draft-7",
+    legacyHeaders: false
+  })
+);
+app.use(express.json({ limit: "100kb" }));
 
 app.get("/health", (req, res) => {
   res.json({ status: "ok" });
 });
 
-const getUserId = (req) => req.header("x-user-id");
+const getUserId = (req) => req.user?.id || null;
 const toVisibilityDetail = (visibility) => {
   if (visibility === "Public") return "Shows in directory";
   if (visibility === "Unlisted") return "Shareable link only";
@@ -130,11 +154,9 @@ app.get(
 
 app.get(
   "/leaderboards/me",
+  requireAuth,
   asyncHandler(async (req, res) => {
-  const userId = getUserId(req);
-  if (!userId) {
-    return res.status(401).json({ error: "Unauthorized" });
-  }
+    const userId = getUserId(req);
     const board = await prisma.leaderboard.findUnique({
       where: { ownerId: userId },
       include: { players: true }
@@ -162,6 +184,7 @@ app.get(
 
 app.get(
   "/leaderboards/:slug",
+  optionalAuth,
   asyncHandler(async (req, res) => {
     const board = await prisma.leaderboard.findUnique({
       where: { slug: req.params.slug },
@@ -210,144 +233,136 @@ const visibilitySchema = z.enum(["Public", "Unlisted", "Private"]);
 
 app.post(
   "/leaderboards",
+  requireAuth,
   asyncHandler(async (req, res) => {
-  const userId = getUserId(req);
-  if (!userId) {
-    return res.status(401).json({ error: "Unauthorized" });
-  }
-  const payloadSchema = z.object({
-    name: z.string().min(1),
-    description: z.string().optional(),
-    bannerUrl: z.string().url().optional(),
-    visibility: visibilitySchema
-  });
-  const payload = payloadSchema.parse(req.body);
-  const slug = payload.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+    const userId = getUserId(req);
+    const payloadSchema = z.object({
+      name: z.string().min(1),
+      description: z.string().optional(),
+      bannerUrl: z.string().url().optional(),
+      visibility: visibilitySchema
+    });
+    const payload = payloadSchema.parse(req.body);
+    const slug = payload.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 
-  const existing = await prisma.leaderboard.findUnique({ where: { ownerId: userId } });
-  if (existing) {
-    return res.status(409).json({ error: "User already owns a leaderboard" });
-  }
-
-  const board = await prisma.leaderboard.create({
-    data: {
-      ownerId: userId,
-      name: payload.name,
-      description: payload.description,
-      bannerUrl: payload.bannerUrl,
-      visibility: payload.visibility,
-      slug
+    const existing = await prisma.leaderboard.findUnique({ where: { ownerId: userId } });
+    if (existing) {
+      return res.status(409).json({ error: "User already owns a leaderboard" });
     }
-  });
 
-  res.status(201).json({
-    id: board.id,
-    name: board.name,
-    description: board.description,
-    slug: board.slug,
-    shareableUrl: shareableUrlFor(board.slug),
-    visibility: board.visibility,
-    visibilityDetail: toVisibilityDetail(board.visibility),
-    playerCount: 0,
-    updatedMinutes: 0,
-    refreshStatus: "pending",
-    nextRefreshMinutes: 30,
-    players: [],
-    latestGames: []
-  });
+    const board = await prisma.leaderboard.create({
+      data: {
+        ownerId: userId,
+        name: payload.name,
+        description: payload.description,
+        bannerUrl: payload.bannerUrl,
+        visibility: payload.visibility,
+        slug
+      }
+    });
+
+    res.status(201).json({
+      id: board.id,
+      name: board.name,
+      description: board.description,
+      slug: board.slug,
+      shareableUrl: shareableUrlFor(board.slug),
+      visibility: board.visibility,
+      visibilityDetail: toVisibilityDetail(board.visibility),
+      playerCount: 0,
+      updatedMinutes: 0,
+      refreshStatus: "pending",
+      nextRefreshMinutes: 30,
+      players: [],
+      latestGames: []
+    });
   })
 );
 
 app.post(
   "/leaderboards/:id/players",
+  requireAuth,
   asyncHandler(async (req, res) => {
-  const userId = getUserId(req);
-  if (!userId) {
-    return res.status(401).json({ error: "Unauthorized" });
-  }
-  const payloadSchema = z.object({
-    puuid: z.string().min(1),
-    gameName: z.string().min(1),
-    tagLine: z.string().min(1),
-    role: z.string().min(1),
-    twitchUrl: z.string().url().optional(),
-    twitterUrl: z.string().url().optional()
-  });
-  const payload = payloadSchema.parse(req.body);
+    const userId = getUserId(req);
+    const payloadSchema = z.object({
+      puuid: z.string().min(1),
+      gameName: z.string().min(1),
+      tagLine: z.string().min(1),
+      role: z.string().min(1),
+      twitchUrl: z.string().url().optional(),
+      twitterUrl: z.string().url().optional()
+    });
+    const payload = payloadSchema.parse(req.body);
 
-  const board = await prisma.leaderboard.findUnique({
-    where: { id: req.params.id },
-    include: { players: true }
-  });
-  if (!board || board.ownerId !== userId) {
-    return res.status(404).json({ error: "Leaderboard not found" });
-  }
-  if (board.players.length >= 15) {
-    return res.status(400).json({ error: "Leaderboard player limit reached" });
-  }
-  const existing = await prisma.leaderboardPlayer.findUnique({
-    where: { leaderboardId_puuid: { leaderboardId: board.id, puuid: payload.puuid } }
-  });
-  if (existing) {
-    return res.status(409).json({ error: "Player already exists on this leaderboard" });
-  }
-
-  const player = await prisma.leaderboardPlayer.create({
-    data: {
-      leaderboardId: board.id,
-      puuid: payload.puuid,
-      gameName: payload.gameName,
-      tagLine: payload.tagLine,
-      role: payload.role,
-      twitchUrl: payload.twitchUrl,
-      twitterUrl: payload.twitterUrl
+    const board = await prisma.leaderboard.findUnique({
+      where: { id: req.params.id },
+      include: { players: true }
+    });
+    if (!board || board.ownerId !== userId) {
+      return res.status(404).json({ error: "Leaderboard not found" });
     }
-  });
+    if (board.players.length >= 15) {
+      return res.status(400).json({ error: "Leaderboard player limit reached" });
+    }
+    const existing = await prisma.leaderboardPlayer.findUnique({
+      where: { leaderboardId_puuid: { leaderboardId: board.id, puuid: payload.puuid } }
+    });
+    if (existing) {
+      return res.status(409).json({ error: "Player already exists on this leaderboard" });
+    }
 
-  res.status(201).json(player);
+    const player = await prisma.leaderboardPlayer.create({
+      data: {
+        leaderboardId: board.id,
+        puuid: payload.puuid,
+        gameName: payload.gameName,
+        tagLine: payload.tagLine,
+        role: payload.role,
+        twitchUrl: payload.twitchUrl,
+        twitterUrl: payload.twitterUrl
+      }
+    });
+
+    res.status(201).json(player);
   })
 );
 
 app.patch(
   "/leaderboards/:id/players/:playerId",
+  requireAuth,
   asyncHandler(async (req, res) => {
-  const userId = getUserId(req);
-  if (!userId) {
-    return res.status(401).json({ error: "Unauthorized" });
-  }
-  const payloadSchema = z.object({
-    role: z.string().min(1).optional(),
-    twitchUrl: z.string().url().optional(),
-    twitterUrl: z.string().url().optional()
-  });
-  const payload = payloadSchema.parse(req.body);
+    const userId = getUserId(req);
+    const payloadSchema = z.object({
+      role: z.string().min(1).optional(),
+      twitchUrl: z.string().url().optional(),
+      twitterUrl: z.string().url().optional()
+    });
+    const payload = payloadSchema.parse(req.body);
 
-  const board = await prisma.leaderboard.findUnique({ where: { id: req.params.id } });
-  if (!board || board.ownerId !== userId) {
-    return res.status(404).json({ error: "Leaderboard not found" });
-  }
+    const board = await prisma.leaderboard.findUnique({ where: { id: req.params.id } });
+    if (!board || board.ownerId !== userId) {
+      return res.status(404).json({ error: "Leaderboard not found" });
+    }
 
-  const player = await prisma.leaderboardPlayer.update({
-    where: { id: req.params.playerId },
-    data: payload
-  });
-  res.json(player);
+    const player = await prisma.leaderboardPlayer.update({
+      where: { id: req.params.playerId },
+      data: payload
+    });
+    res.json(player);
   })
 );
 
 app.delete(
   "/leaderboards/:id/players/:playerId",
+  requireAuth,
   asyncHandler(async (req, res) => {
-  const userId = getUserId(req);
-  if (!userId) {
-    return res.status(401).json({ error: "Unauthorized" });
-  }
-  const board = await prisma.leaderboard.findUnique({ where: { id: req.params.id } });
-  if (!board || board.ownerId !== userId) {
-    return res.status(404).json({ error: "Leaderboard not found" });
-  }
-  await prisma.leaderboardPlayer.delete({ where: { id: req.params.playerId } });
-  res.status(204).end();
+    const userId = getUserId(req);
+    const board = await prisma.leaderboard.findUnique({ where: { id: req.params.id } });
+    if (!board || board.ownerId !== userId) {
+      return res.status(404).json({ error: "Leaderboard not found" });
+    }
+    await prisma.leaderboardPlayer.delete({ where: { id: req.params.playerId } });
+    res.status(204).end();
   })
 );
 
