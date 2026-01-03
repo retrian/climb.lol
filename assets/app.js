@@ -1,5 +1,26 @@
 const formatMinutes = (minutes) => `${minutes} min ago`;
 
+const getClientConfig = () => {
+  const dataset = document.body?.dataset ?? {};
+  return {
+    appBaseUrl: dataset.appBaseUrl || "http://localhost:3000",
+    apiBaseUrl: dataset.apiBaseUrl || dataset.apiBase || "",
+    cdnBaseUrl: dataset.cdnBaseUrl || "http://localhost:3000",
+    opggBaseUrl: dataset.opggBaseUrl || "https://www.op.gg",
+    riotDdragonBase: dataset.riotDdragonBase || "https://ddragon.leagueoflegends.com"
+  };
+};
+
+const resolveBaseUrl = (base, path) => {
+  if (!path) return "";
+  if (/^https?:\\/\\//i.test(path)) return path;
+  return new URL(path, base).toString();
+};
+
+const resolveAppUrl = (path) => resolveBaseUrl(getClientConfig().appBaseUrl, path);
+const resolveRiotUrl = (path) => resolveBaseUrl(getClientConfig().riotDdragonBase, path);
+const resolveOpggUrl = (path) => resolveBaseUrl(getClientConfig().opggBaseUrl, path);
+
 const renderDirectory = (leaderboards) => {
   const grid = document.querySelector("[data-leaderboard-grid]");
   if (!grid) return;
@@ -32,7 +53,7 @@ const renderLeaderboard = (leaderboard) => {
   if (title) title.textContent = leaderboard.name;
   if (description) description.textContent = leaderboard.description;
   if (refreshed) refreshed.textContent = `Last refreshed ${formatMinutes(leaderboard.updatedMinutes)}.`;
-  if (shareable) shareable.textContent = leaderboard.shareableUrl;
+  if (shareable) shareable.textContent = resolveAppUrl(leaderboard.shareableUrl);
   if (visibility) visibility.textContent = `Visibility: ${leaderboard.visibility} • ${leaderboard.visibilityDetail}`;
   if (visibilityBadge) visibilityBadge.textContent = leaderboard.visibility;
 
@@ -40,11 +61,12 @@ const renderLeaderboard = (leaderboard) => {
     tableBody.innerHTML = "";
     leaderboard.players.forEach((player) => {
       const row = document.createElement("tr");
-      const opggUrl = `https://www.op.gg/summoners/na/${player.riotId.replace("#", "-")}`;
+      const opggUrl = resolveOpggUrl(`/summoners/na/${player.riotId.replace("#", "-")}`);
+      const profileIconUrl = resolveRiotUrl(player.profileIconUrl);
       row.innerHTML = `
         <td data-label="Player">
           <div class="player">
-            <div class="avatar"><img src="${player.profileIconUrl}" alt="${player.riotId} profile icon" /></div>
+            <div class="avatar"><img src="${profileIconUrl}" alt="${player.riotId} profile icon" /></div>
             <div>
               <strong>${player.riotId}</strong>
               <div style="color:var(--muted);font-size:0.85rem;">
@@ -67,7 +89,7 @@ const renderLeaderboard = (leaderboard) => {
               .map(
                 (champ) => `
                   <div class="champ-icon">
-                    <img src="${champ.icon}" alt="${champ.name}" title="${champ.name}" />
+                    <img src="${resolveRiotUrl(champ.icon)}" alt="${champ.name}" title="${champ.name}" />
                   </div>
                 `
               )
@@ -124,7 +146,7 @@ const renderDashboard = (leaderboard) => {
   if (refreshedBadge) refreshedBadge.textContent = `Last refresh: ${formatMinutes(leaderboard.updatedMinutes)}`;
   if (refreshedStatus) refreshedStatus.textContent = `Status: ${leaderboard.refreshStatus} • Next scheduled in ${leaderboard.nextRefreshMinutes} min`;
   if (playerCount) playerCount.textContent = `Players (${leaderboard.players.length} / 15)`;
-  if (shareButton) shareButton.setAttribute("data-copy", leaderboard.shareableUrl);
+  if (shareButton) shareButton.setAttribute("data-copy", resolveAppUrl(leaderboard.shareableUrl));
 
   if (playerList) {
     playerList.innerHTML = "";
@@ -155,7 +177,7 @@ const fetchJson = async (url) => {
   return response.json();
 };
 
-const getApiBase = () => document.body?.dataset?.apiBase || "";
+const getApiBase = () => getClientConfig().apiBaseUrl || document.body?.dataset?.apiBase || "";
 
 const resolveSlug = () => {
   const dataSlug = document.body?.dataset?.leaderboardSlug;

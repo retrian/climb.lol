@@ -1,4 +1,5 @@
 import type { MatchSummary } from "./db.js";
+import { config } from "./config";
 
 type MatchHistoryResponse = {
   matches: Array<{
@@ -11,7 +12,7 @@ type MatchHistoryResponse = {
   }>;
 };
 
-const BASE_URL = process.env.MATCH_HISTORY_BASE_URL ?? "https://api.climb.lol";
+const BASE_URL = config.apiBaseUrl;
 
 export async function fetchMatchHistory(
   leaderboardId: string,

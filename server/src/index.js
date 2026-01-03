@@ -4,6 +4,7 @@ import cors from "cors";
 import { z } from "zod";
 import { prisma } from "./db.js";
 import { sampleData } from "./sample-data.js";
+import { config } from "./config.js";
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -64,6 +65,8 @@ const formatMatch = (match, riotId) => ({
   timeAgo: `${minutesSince(match.matchTime)} min ago`
 });
 
+const shareableUrlFor = (slug) => new URL(`/leaderboards/${slug}`, config.appBaseUrl).toString();
+
 app.get("/leaderboards", async (req, res) => {
   try {
     const search = (req.query.search || "").toString().toLowerCase();
@@ -86,7 +89,7 @@ app.get("/leaderboards", async (req, res) => {
         name: board.name,
         description: board.description,
         slug: board.slug,
-        shareableUrl: `https://climb.lol/leaderboards/${board.slug}`,
+        shareableUrl: shareableUrlFor(board.slug),
         visibility: board.visibility,
         visibilityDetail: toVisibilityDetail(board.visibility),
         playerCount: board._count.players,
@@ -120,7 +123,7 @@ app.get("/leaderboards/me", async (req, res) => {
       name: board.name,
       description: board.description || "",
       slug: board.slug,
-      shareableUrl: `https://climb.lol/leaderboards/${board.slug}`,
+      shareableUrl: shareableUrlFor(board.slug),
       visibility: board.visibility,
       visibilityDetail: toVisibilityDetail(board.visibility),
       playerCount: board.players.length,
@@ -167,7 +170,7 @@ app.get("/leaderboards/:slug", async (req, res) => {
       name: board.name,
       description: board.description,
       slug: board.slug,
-      shareableUrl: `https://climb.lol/leaderboards/${board.slug}`,
+      shareableUrl: shareableUrlFor(board.slug),
       visibility: board.visibility,
       visibilityDetail: toVisibilityDetail(board.visibility),
       playerCount: players.length,
@@ -220,7 +223,7 @@ app.post("/leaderboards", async (req, res) => {
     name: board.name,
     description: board.description,
     slug: board.slug,
-    shareableUrl: `https://climb.lol/leaderboards/${board.slug}`,
+    shareableUrl: shareableUrlFor(board.slug),
     visibility: board.visibility,
     visibilityDetail: toVisibilityDetail(board.visibility),
     playerCount: 0,

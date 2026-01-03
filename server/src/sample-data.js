@@ -1,3 +1,8 @@
+import { config } from "./config.js";
+
+const shareableUrlFor = (slug) => new URL(`/leaderboards/${slug}`, config.appBaseUrl).toString();
+const riotAssetUrl = (path) => new URL(path, config.riotDdragonBase).toString();
+
 export const sampleData = {
   leaderboards: [
     {
@@ -5,7 +10,7 @@ export const sampleData = {
       name: "Challenger Crew",
       description: "A focused NA-only leaderboard tracking the most active ranked grinders.",
       slug: "challenger-crew",
-      shareableUrl: "https://climb.lol/leaderboards/challenger-crew",
+      shareableUrl: shareableUrlFor("challenger-crew"),
       visibility: "Public",
       visibilityDetail: "Shows in directory",
       playerCount: 13,
@@ -15,7 +20,7 @@ export const sampleData = {
       players: [
         {
           riotId: "SkyHook#NA1",
-          profileIconUrl: "https://ddragon.leagueoflegends.com/cdn/14.2.1/img/profileicon/503.png",
+          profileIconUrl: riotAssetUrl("/cdn/14.2.1/img/profileicon/503.png"),
           role: "Mid",
           rank: "Challenger • 890 LP",
           wins: 128,
@@ -24,23 +29,23 @@ export const sampleData = {
           topChamps: [
             {
               name: "Ahri",
-              icon: "https://ddragon.leagueoflegends.com/cdn/14.2.1/img/champion/Ahri.png"
+              icon: riotAssetUrl("/cdn/14.2.1/img/champion/Ahri.png")
             },
             {
               name: "Sylas",
-              icon: "https://ddragon.leagueoflegends.com/cdn/14.2.1/img/champion/Sylas.png"
+              icon: riotAssetUrl("/cdn/14.2.1/img/champion/Sylas.png")
             },
             {
               name: "Orianna",
-              icon: "https://ddragon.leagueoflegends.com/cdn/14.2.1/img/champion/Orianna.png"
+              icon: riotAssetUrl("/cdn/14.2.1/img/champion/Orianna.png")
             },
             {
               name: "Azir",
-              icon: "https://ddragon.leagueoflegends.com/cdn/14.2.1/img/champion/Azir.png"
+              icon: riotAssetUrl("/cdn/14.2.1/img/champion/Azir.png")
             },
             {
               name: "LeBlanc",
-              icon: "https://ddragon.leagueoflegends.com/cdn/14.2.1/img/champion/Leblanc.png"
+              icon: riotAssetUrl("/cdn/14.2.1/img/champion/Leblanc.png")
             }
           ],
           socials: [
@@ -57,7 +62,7 @@ export const sampleData = {
         },
         {
           riotId: "Nova#NA1",
-          profileIconUrl: "https://ddragon.leagueoflegends.com/cdn/14.2.1/img/profileicon/508.png",
+          profileIconUrl: riotAssetUrl("/cdn/14.2.1/img/profileicon/508.png"),
           role: "Jungle",
           rank: "Grandmaster • 702 LP",
           wins: 96,
@@ -66,23 +71,23 @@ export const sampleData = {
           topChamps: [
             {
               name: "Lee Sin",
-              icon: "https://ddragon.leagueoflegends.com/cdn/14.2.1/img/champion/LeeSin.png"
+              icon: riotAssetUrl("/cdn/14.2.1/img/champion/LeeSin.png")
             },
             {
               name: "Graves",
-              icon: "https://ddragon.leagueoflegends.com/cdn/14.2.1/img/champion/Graves.png"
+              icon: riotAssetUrl("/cdn/14.2.1/img/champion/Graves.png")
             },
             {
               name: "Viego",
-              icon: "https://ddragon.leagueoflegends.com/cdn/14.2.1/img/champion/Viego.png"
+              icon: riotAssetUrl("/cdn/14.2.1/img/champion/Viego.png")
             },
             {
               name: "Nocturne",
-              icon: "https://ddragon.leagueoflegends.com/cdn/14.2.1/img/champion/Nocturne.png"
+              icon: riotAssetUrl("/cdn/14.2.1/img/champion/Nocturne.png")
             },
             {
               name: "Nidalee",
-              icon: "https://ddragon.leagueoflegends.com/cdn/14.2.1/img/champion/Nidalee.png"
+              icon: riotAssetUrl("/cdn/14.2.1/img/champion/Nidalee.png")
             }
           ],
           socials: [
@@ -122,7 +127,7 @@ export const sampleData = {
       name: "Cloud9 Academy",
       description: "NA academy lineup tracking ranked readiness.",
       slug: "cloud9-academy",
-      shareableUrl: "https://climb.lol/leaderboards/cloud9-academy",
+      shareableUrl: shareableUrlFor("cloud9-academy"),
       visibility: "Public",
       visibilityDetail: "Shows in directory",
       playerCount: 10,
