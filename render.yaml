@@ -7,7 +7,7 @@ services:
     startCommand: "npm run start"
     envVars:
       - key: DATABASE_URL
-        value: "file:./data.db"
+        value: "postgresql://postgres:postgres@localhost:5432/climb_lol"
       - key: NEXTAUTH_URL
         value: "https://climb.lol"
       - key: NEXTAUTH_SECRET
