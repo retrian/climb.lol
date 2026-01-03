@@ -1,0 +1,13 @@
+{
+  "name": "climb.lol",
+  "version": "1.0.0",
+  "description": "climb.lol API",
+  "main": "src/server.js",
+  "license": "MIT",
+  "scripts": {
+    "start": "node src/server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}
