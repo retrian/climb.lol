@@ -1,4 +1,5 @@
 import Database from "better-sqlite3";
+import { config } from "./config";
 
 export type MatchSummary = {
   id: string;
@@ -9,7 +10,7 @@ export type MatchSummary = {
   endedAt: string;
 };
 
-const db = new Database("./data.sqlite");
+const db = new Database(config.matchesDbPath);
 
 db.exec(`
   CREATE TABLE IF NOT EXISTS matches (
