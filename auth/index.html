@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sign in — climb.lol</title>
+  <link rel="stylesheet" href="/assets/styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <header class="navbar" data-app-data>
+    <div class="container navbar-inner">
+      <a class="brand" href="/">climb.lol</a>
+      <nav class="nav-links">
+        <a href="/">Home</a>
+        <a href="/leaderboards/">Leaderboards</a>
+      </nav>
+      <a class="nav-cta" href="/leaderboards/">Browse</a>
+    </div>
+  </header>
+
+  <main class="section">
+    <div class="container">
+      <div class="card" style="max-width:520px;margin:0 auto;">
+        <h2>Sign in</h2>
+        <p class="muted">Fastest MVP path uses Google or Discord. Link your Riot ID after signing in to resolve PUUID.</p>
+        <div style="display:grid;gap:0.75rem;margin-top:1rem;">
+          <a class="button primary" href="/auth/">Continue with Google</a>
+          <a class="button secondary" href="/auth/">Continue with Discord</a>
+        </div>
+        <div class="card" style="background:var(--bg-alt);border-style:dashed;margin-top:1.5rem;">
+          <strong>Future-ready</strong>
+          <span>We can upgrade to Riot Sign On when approval becomes viable.</span>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <p>Authentication is required to create or manage a leaderboard.</p>
+    </div>
+  </footer>
+
+  <script src="/assets/app.js"></script>
+</body>
+</html>

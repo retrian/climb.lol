@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Challenger Crew — climb.lol</title>
+  <link rel="stylesheet" href="/assets/styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <header class="navbar" data-app-data>
+    <div class="container navbar-inner">
+      <a class="brand" href="/">climb.lol</a>
+      <nav class="nav-links">
+        <a href="/">Home</a>
+        <a href="/leaderboards/">Leaderboards</a>
+        <a href="/auth/">Sign in</a>
+      </nav>
+      <a class="nav-cta" href="/leaderboards/">Back to directory</a>
+    </div>
+  </header>
+
+  <main class="section">
+    <div class="container">
+      <div class="banner" style="margin-bottom:2rem;">
+        <span class="badge" data-leaderboard-visibility-badge></span>
+        <h2 style="margin-top:0.8rem;" data-leaderboard-title></h2>
+        <p class="muted" style="max-width:65ch;"><span data-leaderboard-description></span> <span data-leaderboard-refreshed></span></p>
+        <div class="stack" style="margin-top:0.6rem;">
+          <span class="muted">Shareable link: <span data-leaderboard-share></span></span>
+          <span class="muted" data-leaderboard-visibility></span>
+        </div>
+        <div class="hero-actions" style="margin-top:1.5rem;">
+          <a class="button primary" href="#latest">View latest games</a>
+          <a class="button secondary" href="/auth/">Claim & manage</a>
+        </div>
+      </div>
+
+      <div class="section-header">
+        <h2>Leaderboard</h2>
+        <span class="badge">15 player cap • NA only</span>
+      </div>
+
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Player</th>
+            <th>Role</th>
+            <th>Rank</th>
+            <th>Winrate</th>
+            <th>Top Champs</th>
+            <th>Socials</th>
+          </tr>
+        </thead>
+        <tbody data-leaderboard-players></tbody>
+      </table>
+
+      <section id="latest" class="section" style="padding-top:2.5rem;">
+        <div class="section-header">
+          <h2>Latest games</h2>
+          <span class="badge">Last 10 across the leaderboard</span>
+        </div>
+        <div class="feed" data-latest-feed></div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <p>Leaderboard data refreshes every 30 minutes via scheduled jobs.</p>
+    </div>
+  </footer>
+
+  <script src="/assets/app.js"></script>
+</body>
+</html>

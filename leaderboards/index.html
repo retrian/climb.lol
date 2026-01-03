@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Public Leaderboards — climb.lol</title>
+  <link rel="stylesheet" href="/assets/styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <header class="navbar" data-app-data>
+    <div class="container navbar-inner">
+      <a class="brand" href="/">climb.lol</a>
+      <nav class="nav-links">
+        <a href="/">Home</a>
+        <a href="/leaderboards/">Leaderboards</a>
+        <a href="/auth/">Sign in</a>
+      </nav>
+      <a class="nav-cta" href="/auth/">Create Leaderboard</a>
+    </div>
+  </header>
+
+  <main class="section">
+    <div class="container">
+      <div class="section-header">
+        <div>
+          <h2>Public leaderboards</h2>
+          <p class="muted">Browse NA-only leaderboards. Search by name to find your crew.</p>
+          <div class="stack" style="margin-top:0.6rem;">
+            <span class="badge">Public only</span>
+            <span class="muted">Unlisted boards require a direct link. Private boards are owner-only.</span>
+          </div>
+        </div>
+        <div style="min-width:240px;">
+          <input class="input" type="search" placeholder="Search by name" />
+        </div>
+      </div>
+
+      <div class="card-grid" data-leaderboard-grid></div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <p>Need yours listed? Sign in to create a leaderboard. Public view only shows public boards.</p>
+    </div>
+  </footer>
+
+  <script src="/assets/app.js"></script>
+</body>
+</html>
