@@ -1,17 +1,22 @@
 services:
   - type: web
     name: climb-lol
-    env: python
+    env: node
     plan: free
-    buildCommand: "pip install -r requirements.txt"
-    startCommand: "uvicorn app.main:app --host 0.0.0.0 --port 10000"
+    buildCommand: "npm install && npm run build"
+    startCommand: "npm run start"
     envVars:
-      - key: DATABASE_PATH
-        value: ./data.db
-      - key: STALE_MINUTES
-        value: "30"
-
-  - type: cron
-    name: refresh-stale-players
-    schedule: "*/30 * * * *"
-    command: "curl -X POST ${RENDER_EXTERNAL_URL}/api/refresh"
+      - key: DATABASE_URL
+        value: "file:./data.db"
+      - key: NEXTAUTH_URL
+        value: "https://climb.lol"
+      - key: NEXTAUTH_SECRET
+        value: ""
+      - key: GOOGLE_CLIENT_ID
+        value: ""
+      - key: GOOGLE_CLIENT_SECRET
+        value: ""
+      - key: DISCORD_CLIENT_ID
+        value: ""
+      - key: DISCORD_CLIENT_SECRET
+        value: ""
