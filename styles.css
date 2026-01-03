@@ -656,4 +656,27 @@ th {
   .span-2 {
     grid-column: span 1;
   }
+
+  .banner {
+    min-height: 200px;
+  }
+}
+
+@media (max-width: 640px) {
+  .nav__inner {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .preview-card {
+    grid-template-columns: 1fr;
+  }
+
+  .hero__stats {
+    flex-direction: column;
+  }
+
+  .span-2 {
+    grid-column: span 1;
+  }
 }
