@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Manage Leaderboard — climb.lol</title>
+  <link rel="stylesheet" href="/assets/styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+</head>
+<body data-api-base="/api">
+  <header class="navbar" data-app-data>
+    <div class="container navbar-inner">
+      <a class="brand" href="/">climb.lol</a>
+      <nav class="nav-links">
+        <a href="/">Home</a>
+        <a href="/leaderboards/">Leaderboards</a>
+        <a href="/dashboard/">My Leaderboard</a>
+      </nav>
+      <a class="nav-cta" href="/leaderboards/detail.html">View Public Page</a>
+    </div>
+  </header>
+
+  <main class="section">
+    <div class="container" style="display:grid;gap:2rem;">
+      <div class="section-header">
+        <div>
+          <h2>Manage leaderboard</h2>
+          <p class="muted">Create or update your single leaderboard. Visibility controls who can see it.</p>
+        </div>
+        <div class="stack">
+          <span class="badge" data-dashboard-refreshed></span>
+          <span class="muted" data-dashboard-status></span>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Leaderboard metadata</h3>
+        <div style="display:grid;gap:1rem;margin-top:1rem;">
+          <label>
+            <span>Name</span>
+            <input class="input" type="text" data-dashboard-name />
+          </label>
+          <label>
+            <span>Description</span>
+            <textarea class="input" rows="3" data-dashboard-description></textarea>
+          </label>
+          <label>
+            <span>Banner URL</span>
+            <input class="input" type="url" placeholder="https://" />
+          </label>
+          <label>
+            <span>Slug (shareable URL)</span>
+            <input class="input" type="text" data-dashboard-slug readonly />
+          </label>
+          <label>
+            <span>Visibility</span>
+            <select class="input" data-dashboard-visibility>
+              <option>Public</option>
+              <option>Unlisted</option>
+              <option>Private</option>
+            </select>
+          </label>
+          <span class="muted">Public appears in the directory, Unlisted is link-only, Private is owner-only.</span>
+        </div>
+        <div class="hero-actions" style="margin-top:1.5rem;">
+          <button class="button primary" type="button">Save changes</button>
+          <button class="button secondary" type="button" data-copy>Copy shareable link</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 data-dashboard-player-count></h3>
+        <p class="muted">Add by Riot ID, assign a role (standard or custom), and optional socials. PUUID uniqueness enforced.</p>
+        <div style="display:grid;gap:0.75rem;margin-top:1rem;">
+          <div style="display:grid;grid-template-columns:2fr 1fr;gap:0.75rem;">
+            <input class="input" type="text" placeholder="Riot ID e.g. SkyHook#NA1" />
+            <input class="input" type="text" placeholder="Role (Top, Jungle, etc.)" />
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;">
+            <input class="input" type="url" placeholder="Twitch URL (optional)" />
+            <input class="input" type="url" placeholder="X/Twitter URL (optional)" />
+          </div>
+          <button class="button primary" type="button">Add player</button>
+        </div>
+
+        <div style="margin-top:1.5rem;display:grid;gap:0.75rem;">
+        <div style="margin-top:1.5rem;display:grid;gap:0.75rem;" data-dashboard-players></div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <p>Refresh jobs run every 30 minutes; data remains visible if refresh fails.</p>
+    </div>
+  </footer>
+
+  <script src="/assets/app.js"></script>
+</body>
+</html>
