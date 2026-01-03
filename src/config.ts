@@ -13,4 +13,5 @@ export const config = {
   riotDdragonBase: normalizeBaseUrl(
     getEnv("RIOT_DDRAGON_BASE", "https://ddragon.leagueoflegends.com")
   ),
+  matchesDbPath: getEnv("MATCHES_DB_PATH", "./data.sqlite"),
 };
