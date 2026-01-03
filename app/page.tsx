@@ -6,30 +6,38 @@ export default async function HomePage() {
   const session = await getServerSession(authOptions);
 
   return (
-    <main style={{ padding: "3rem" }}>
-      <h1>climb.lol</h1>
-      <p>Track and share your climbing leaderboard.</p>
-      {session ? (
+    <section>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 24 }}>
         <div>
-          <p>Welcome back, {session.user.name ?? "climber"}.</p>
-          <div style={{ display: "flex", gap: "1rem" }}>
-            <Link href="/dashboard">Go to dashboard</Link>
-            <Link href="/api/auth/signout">Sign out</Link>
-          </div>
+          <p className="eyebrow">Leaderboard hub</p>
+          <h1>climb.lol</h1>
+          <p className="subtitle">Track and share your curated League rank leaderboards.</p>
         </div>
-      ) : (
+
         <div>
-          <p>Sign in to create your leaderboard.</p>
-          <ul>
-            <li>
-              <Link href="/api/auth/signin/google">Sign in with Google</Link>
-            </li>
-            <li>
-              <Link href="/api/auth/signin/discord">Sign in with Discord</Link>
-            </li>
-          </ul>
+          {session ? (
+            <div className="pill">
+              <div>
+                <div style={{ fontWeight: 700 }}>{session.user.name ?? "Climber"}</div>
+                <div className="muted">Signed in</div>
+              </div>
+            </div>
+          ) : (
+            <div className="pill">
+              <Link href="/api/auth/signin/google">Sign in</Link>
+            </div>
+          )}
         </div>
-      )}
-    </main>
+      </div>
+
+      <div className="panel" style={{ marginTop: 24 }}>
+        <h2>Get started</h2>
+        <p className="muted">Browse public leaderboards or sign in to create and manage your own leaderboard.</p>
+        <div style={{ marginTop: 16 }}>
+          <Link href="/leaderboards" className="pill">View Leaderboards</Link>{" "}
+          <Link href="/dashboard" className="pill">Dashboard</Link>
+        </div>
+      </div>
+    </section>
   );
 }

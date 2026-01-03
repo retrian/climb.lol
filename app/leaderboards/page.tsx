@@ -1,9 +1,14 @@
 import Link from "next/link";
-import { getPublicLeaderboards } from "../../lib/leaderboards";
+export const dynamic = "force-dynamic";
 import { visibilityLabels } from "../../lib/visibility";
+import { prisma } from "@/lib/db";
 
-export default function LeaderboardsPage() {
-  const leaderboards = getPublicLeaderboards();
+export default async function LeaderboardsPage() {
+  const leaderboards = await prisma.leaderboard.findMany({
+    where: { visibility: "Public" },
+    select: { name: true, slug: true, visibility: true },
+    orderBy: { updatedAt: "desc" },
+  });
 
   return (
     <main style={{ padding: "2rem" }}>
@@ -15,7 +20,13 @@ export default function LeaderboardsPage() {
             <Link href={`/leaderboards/${leaderboard.slug}`}>
               {leaderboard.name}
             </Link>{" "}
-            <span>({visibilityLabels[leaderboard.visibility]})</span>
+            {(() => {
+              const visKey = (String(leaderboard.visibility).toLowerCase() as
+                | "public"
+                | "unlisted"
+                | "private");
+              return <span>({visibilityLabels[visKey]})</span>;
+            })()}
           </li>
         ))}
       </ul>
