@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: climb-lol
+    env: python
+    plan: free
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "uvicorn app.main:app --host 0.0.0.0 --port 10000"
+    envVars:
+      - key: DATABASE_PATH
+        value: ./data.db
+      - key: STALE_MINUTES
+        value: "30"
+
+  - type: cron
+    name: refresh-stale-players
+    schedule: "*/30 * * * *"
+    command: "curl -X POST ${RENDER_EXTERNAL_URL}/api/refresh"
