@@ -1,15 +1,36 @@
 const express = require('express');
+const { PrismaClient } = require('@prisma/client');
 
 const app = express();
 app.use(express.json());
 
-const leaderboards = new Map();
+const prisma = new PrismaClient();
 
-function getLeaderboard(id) {
-  if (!leaderboards.has(id)) {
-    leaderboards.set(id, new Map());
+function logError(message, error, meta = {}, level = 'error') {
+  const payload = {
+    level,
+    message,
+    ...meta,
+    error: error
+      ? {
+          name: error.name,
+          message: error.message,
+          stack: error.stack
+        }
+      : undefined
+  };
+
+  if (level === 'warn') {
+    console.warn(JSON.stringify(payload));
+  } else {
+    console.error(JSON.stringify(payload));
   }
-  return leaderboards.get(id);
+}
+
+function asyncHandler(handler) {
+  return (req, res, next) => {
+    Promise.resolve(handler(req, res, next)).catch(next);
+  };
 }
 
 async function resolvePuuid(gameName, tagLine) {
@@ -41,47 +62,83 @@ async function resolvePuuid(gameName, tagLine) {
   return data.puuid;
 }
 
-app.get('/api/leaderboards/:id/players', (req, res) => {
-  const leaderboard = getLeaderboard(req.params.id);
-  res.json({
-    players: Array.from(leaderboard.values())
-  });
-});
+app.get(
+  '/api/leaderboards/:id/players',
+  asyncHandler(async (req, res) => {
+    const players = await prisma.leaderboardPlayer.findMany({
+      where: { leaderboardId: req.params.id },
+      orderBy: { createdAt: 'asc' }
+    });
 
-app.post('/api/leaderboards/:id/players', async (req, res) => {
-  const { gameName, tagLine } = req.body || {};
+    res.json({ players });
+  })
+);
 
-  if (!gameName || !tagLine) {
-    return res.status(400).json({ error: 'gameName and tagLine are required' });
-  }
+app.post(
+  '/api/leaderboards/:id/players',
+  asyncHandler(async (req, res) => {
+    const { gameName, tagLine } = req.body || {};
 
-  let puuid;
-  try {
-    puuid = await resolvePuuid(gameName, tagLine);
-  } catch (error) {
-    const status = error.status || 500;
-    return res.status(status).json({ error: error.message });
-  }
+    if (!gameName || !tagLine) {
+      return res.status(400).json({ error: 'gameName and tagLine are required' });
+    }
 
-  const leaderboard = getLeaderboard(req.params.id);
+    let puuid;
+    try {
+      puuid = await resolvePuuid(gameName, tagLine);
+    } catch (error) {
+      logError('Failed to resolve player PUUID', error, {
+        leaderboardId: req.params.id,
+        gameName,
+        tagLine
+      });
+      const status = error.status || 500;
+      return res
+        .status(status)
+        .json({ error: status === 500 ? 'Failed to resolve player' : error.message });
+    }
 
-  if (leaderboard.size >= 15) {
-    return res.status(400).json({ error: 'Leaderboards are limited to 15 players' });
-  }
+    const leaderboardId = req.params.id;
+    const playerCount = await prisma.leaderboardPlayer.count({
+      where: { leaderboardId }
+    });
 
-  if (leaderboard.has(puuid)) {
-    return res.status(409).json({ error: 'Player already exists on this leaderboard' });
-  }
+    if (playerCount >= 15) {
+      return res.status(400).json({ error: 'Leaderboards are limited to 15 players' });
+    }
 
-  const player = {
-    puuid,
-    gameName,
-    tagLine
-  };
+    const existing = await prisma.leaderboardPlayer.findUnique({
+      where: { leaderboardId_puuid: { leaderboardId, puuid } }
+    });
 
-  leaderboard.set(puuid, player);
+    if (existing) {
+      return res.status(409).json({ error: 'Player already exists on this leaderboard' });
+    }
 
-  return res.status(201).json({ player });
+    const player = await prisma.leaderboardPlayer.create({
+      data: {
+        leaderboardId,
+        puuid,
+        gameName,
+        tagLine
+      }
+    });
+
+    return res.status(201).json({ player });
+  })
+);
+
+app.use((err, req, res, next) => {
+  const status = err.status || 500;
+  const level = status >= 500 ? 'error' : 'warn';
+  logError('Request failed', err, {
+    status,
+    method: req.method,
+    route: req.originalUrl
+  }, level);
+  res
+    .status(status)
+    .json({ error: status >= 500 ? 'Internal server error' : err.message });
 });
 
 const port = process.env.PORT || 3000;

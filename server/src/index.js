@@ -3,7 +3,6 @@ import express from "express";
 import cors from "cors";
 import { z } from "zod";
 import { prisma } from "./db.js";
-import { sampleData } from "./sample-data.js";
 import { config } from "./config.js";
 
 const app = express();
@@ -67,8 +66,34 @@ const formatMatch = (match, riotId) => ({
 
 const shareableUrlFor = (slug) => new URL(`/leaderboards/${slug}`, config.appBaseUrl).toString();
 
-app.get("/leaderboards", async (req, res) => {
-  try {
+const logError = (message, error, meta = {}, level = "error") => {
+  const payload = {
+    level,
+    message,
+    ...meta,
+    error: error
+      ? {
+          name: error.name,
+          message: error.message,
+          stack: error.stack
+        }
+      : undefined
+  };
+
+  if (level === "warn") {
+    console.warn(JSON.stringify(payload));
+  } else {
+    console.error(JSON.stringify(payload));
+  }
+};
+
+const asyncHandler = (handler) => (req, res, next) => {
+  Promise.resolve(handler(req, res, next)).catch(next);
+};
+
+app.get(
+  "/leaderboards",
+  asyncHandler(async (req, res) => {
     const search = (req.query.search || "").toString().toLowerCase();
     const boards = await prisma.leaderboard.findMany({
       where: {
@@ -100,17 +125,16 @@ app.get("/leaderboards", async (req, res) => {
         latestGames: []
       }))
     );
-  } catch (error) {
-    res.json(sampleData.leaderboards);
-  }
-});
+  })
+);
 
-app.get("/leaderboards/me", async (req, res) => {
+app.get(
+  "/leaderboards/me",
+  asyncHandler(async (req, res) => {
   const userId = getUserId(req);
   if (!userId) {
     return res.status(401).json({ error: "Unauthorized" });
   }
-  try {
     const board = await prisma.leaderboard.findUnique({
       where: { ownerId: userId },
       include: { players: true }
@@ -133,13 +157,12 @@ app.get("/leaderboards/me", async (req, res) => {
       players: board.players.map(formatPlayer),
       latestGames: []
     });
-  } catch (error) {
-    res.json(sampleData.leaderboards[0]);
-  }
-});
+  })
+);
 
-app.get("/leaderboards/:slug", async (req, res) => {
-  try {
+app.get(
+  "/leaderboards/:slug",
+  asyncHandler(async (req, res) => {
     const board = await prisma.leaderboard.findUnique({
       where: { slug: req.params.slug },
       include: {
@@ -180,15 +203,14 @@ app.get("/leaderboards/:slug", async (req, res) => {
       players,
       latestGames
     });
-  } catch (error) {
-    const board = sampleData.leaderboards.find((entry) => entry.slug === req.params.slug) || sampleData.leaderboards[0];
-    res.json(board);
-  }
-});
+  })
+);
 
 const visibilitySchema = z.enum(["Public", "Unlisted", "Private"]);
 
-app.post("/leaderboards", async (req, res) => {
+app.post(
+  "/leaderboards",
+  asyncHandler(async (req, res) => {
   const userId = getUserId(req);
   if (!userId) {
     return res.status(401).json({ error: "Unauthorized" });
@@ -233,9 +255,12 @@ app.post("/leaderboards", async (req, res) => {
     players: [],
     latestGames: []
   });
-});
+  })
+);
 
-app.post("/leaderboards/:id/players", async (req, res) => {
+app.post(
+  "/leaderboards/:id/players",
+  asyncHandler(async (req, res) => {
   const userId = getUserId(req);
   if (!userId) {
     return res.status(401).json({ error: "Unauthorized" });
@@ -280,9 +305,12 @@ app.post("/leaderboards/:id/players", async (req, res) => {
   });
 
   res.status(201).json(player);
-});
+  })
+);
 
-app.patch("/leaderboards/:id/players/:playerId", async (req, res) => {
+app.patch(
+  "/leaderboards/:id/players/:playerId",
+  asyncHandler(async (req, res) => {
   const userId = getUserId(req);
   if (!userId) {
     return res.status(401).json({ error: "Unauthorized" });
@@ -304,9 +332,12 @@ app.patch("/leaderboards/:id/players/:playerId", async (req, res) => {
     data: payload
   });
   res.json(player);
-});
+  })
+);
 
-app.delete("/leaderboards/:id/players/:playerId", async (req, res) => {
+app.delete(
+  "/leaderboards/:id/players/:playerId",
+  asyncHandler(async (req, res) => {
   const userId = getUserId(req);
   if (!userId) {
     return res.status(401).json({ error: "Unauthorized" });
@@ -317,9 +348,12 @@ app.delete("/leaderboards/:id/players/:playerId", async (req, res) => {
   }
   await prisma.leaderboardPlayer.delete({ where: { id: req.params.playerId } });
   res.status(204).end();
-});
+  })
+);
 
-app.get("/leaderboards/:id/matches", async (req, res) => {
+app.get(
+  "/leaderboards/:id/matches",
+  asyncHandler(async (req, res) => {
   const limit = Number.parseInt(req.query.limit, 10) || 10;
   const matches = await prisma.match.findMany({
     where: { leaderboardId: req.params.id },
@@ -327,6 +361,21 @@ app.get("/leaderboards/:id/matches", async (req, res) => {
     take: Math.min(limit, 10)
   });
   res.json(matches);
+  })
+);
+
+app.use((err, req, res, next) => {
+  const isValidationError = err instanceof z.ZodError;
+  const status = err.status || (isValidationError ? 400 : 500);
+  const level = status >= 500 ? "error" : "warn";
+  logError("Request failed", err, {
+    status,
+    method: req.method,
+    route: req.originalUrl
+  }, level);
+  res
+    .status(status)
+    .json({ error: isValidationError ? "Invalid request" : status >= 500 ? "Internal server error" : err.message });
 });
 
 app.post("/refresh", (req, res) => {
