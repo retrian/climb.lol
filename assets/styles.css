@@ -31,10 +31,6 @@ a {
   text-decoration: none;
 }
 
-button {
-  font-family: inherit;
-}
-
 img {
   max-width: 100%;
   display: block;
@@ -89,15 +85,6 @@ img {
   background: var(--primary);
   color: #fff;
   font-weight: 600;
-}
-
-.muted {
-  color: var(--muted);
-}
-
-.stack {
-  display: grid;
-  gap: 0.5rem;
 }
 
 .hero {
@@ -189,13 +176,6 @@ img {
   border: 1px solid var(--border);
 }
 
-.banner-hero {
-  background: linear-gradient(120deg, rgba(124, 107, 255, 0.18), rgba(93, 211, 158, 0.2)),
-    url("https://images.unsplash.com/photo-1504270997636-07ddfbd48945?auto=format&fit=crop&w=1600&q=80")
-    center/cover;
-  position: relative;
-}
-
 .input {
   background: var(--bg-alt);
   border: 1px solid var(--border);
@@ -203,12 +183,6 @@ img {
   border-radius: 12px;
   color: var(--text);
   width: 100%;
-}
-
-.input[disabled],
-.input[readonly] {
-  opacity: 0.7;
-  cursor: not-allowed;
 }
 
 .table {
@@ -290,16 +264,6 @@ img {
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.08);
   color: var(--muted);
-}
-
-.badge.positive {
-  background: rgba(93, 211, 158, 0.2);
-  color: #bdf7dd;
-}
-
-.badge.negative {
-  background: rgba(255, 107, 107, 0.2);
-  color: #ffb3b3;
 }
 
 .feed {
